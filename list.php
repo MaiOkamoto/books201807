@@ -1,4 +1,7 @@
 <!DOCTYPE html>
+<?php
+  session_start();
+ ?>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -19,26 +22,33 @@
 
 
       //データベースから取得
-      $sql = 'SELECT * FROM books WHERE 1';
-      $stmt = $dbh->prepare($sql);
-      $stmt->execute();
+      // $books = $dbh->query('SELECT * FROM book_list ORDER BY id');
+      $books = $dbh->query('SELECT *
+                            FROM book_list
+                            LEFT JOIN author
+                            ON book_list.author_id = author.author_id
+                            LEFT JOIN company
+                            ON book_list.company_id = company.company_id');
 
-      //結果データを表示
-      while(1){
-          $rec = $stmt->fetch(PDO::FETCH_ASSOC);
-          if($rec == false){
-              break;
-          }
-          print $rec['title'];
-          print '&nbsp;';
-          print $rec['author'];
-          print '&nbsp;';
-          print $rec['company'];
-          print '<br/>';
-      }
-
+      //データベース接続解除
       $dbh = null;
+    ?>
 
-      ?>
+      <div>
+      <?php while($book = $books->fetch()): ?>
+      <p>
+      ●<?php echo($book['title']); ?><br/>
+      ー<?php echo($book['author_name']); ?><br/>
+      ー<?php echo($book['company_name']); ?>
+      </p>
+      <a href="update.php?id=<?php echo($book['id']); ?>">編集</a>
+      <a href="delete.php?id=<?php echo($book['id']); ?>">削除</a>
+      <?php endwhile; ?>
+      <br/>
+      <br/>
+      <a href="index.html">TOPに戻る</a>
+      </div>
+
+
 </body>
 </html>
