@@ -50,36 +50,39 @@
       //データベース接続解除
       $dbh = null;
 
-      print '<br/>';
-      print 'タイトル:';
-      print $title;
-      print '<br/>';
-      print '著者:';
-      print $author['author_name'];
-      print '<br/>';
-      print '出版社:';
-      print $company['company_name'];
-      print '<br/>';
-      print '分類:';
-      print $class;
+      echo '<br/>';
+      echo 'タイトル:';
+      echo $title;
+      echo '<br/>';
+      echo '著者:';
+      echo $author['author_name'];
+      echo '<br/>';
+      echo '出版社:';
+      echo $company['company_name'];
+      echo '<br/>';
+      echo '分類:';
+      echo $class;
+      echo '<br/>';
 
 
       if($title == '' || $author_no == '' || $company_no == '' || $class == ''){
-        print '<form>';
-        print '<input type= "button" onclick ="history.back()" value = "戻る">';
-        print '</form>';
+        echo '<form method="post" action="new.php">';
+        echo '<button type="submit">戻る</button>';
+        echo '</form>';
       }else{
-        print '<form method="post" action="save.php">';
+        echo '<form method="post" action="new.php">';
+        echo '<button type="submit">戻る</button>';
+        echo '</form>';
+        echo '<br/>';
 
-        // print '<input name="title" type="hidden" value="'.$title.'">';
-        // print '<input name="author" type="hidden"  value="'.$author.'">';
-        // print '<input name="company" type="hidden" value="'.$company.'">';
+        echo '<form method="post" action="save.php">';
 
-        print '<input type= "button" onclick = "history.back()" value = "戻る">';
-        print '<input type= "submit" value="登録">';
-
-        print '</form>';
-
+        // echo '<input name="title" type="hidden" value="'.$title.'">';
+        // echo '<input name="author" type="hidden"  value="'.$author.'">';
+        // echo '<input name="company" type="hidden" value="'.$company.'">';
+;
+        echo '<button type="submit">登録</button>';
+        echo '</form>';
       }
 
       ?>

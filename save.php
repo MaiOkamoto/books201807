@@ -34,25 +34,25 @@
       $companys->execute(array($company_no));
       $company = $companys->fetch();
 
-//print_r($GLOBALS);
-      print '【登録が完了しました】';
-      print '<br/>';
-      print 'タイトル:';
-      print $title;
-      print '<br/>';
-      print '著者:';
-      print $author['author_name'];
-      print '<br/>';
-      print '出版社:';
-      print $company['company_name'];
-      print '<br/>';
-      print '分類:';
-      print $class;
-      print '<br/>';
-      print '<br/>';
-      print '<a href="new.php">新規登録画面に戻る</a>';
-      print '<br/>';
-      print '<a href="index.html">TOPに戻る</a>';
+//echo_r($GLOBALS);
+      echo '【登録が完了しました】';
+      echo '<br/>';
+      echo 'タイトル:';
+      echo $title;
+      echo '<br/>';
+      echo '著者:';
+      echo $author['author_name'];
+      echo '<br/>';
+      echo '出版社:';
+      echo $company['company_name'];
+      echo '<br/>';
+      echo '分類:';
+      echo $class;
+      echo '<br/>';
+      echo '<br/>';
+      echo '<a href="new.php">新規登録画面に戻る</a>';
+      echo '<br/>';
+      echo '<a href="index.html">TOPに戻る</a>';
 
       if(!$_SESSION['check']) {
         // データベースに保存
@@ -67,14 +67,17 @@
 
         $_SESSION['check'] = true;
       }else{
-        print '<br/>';
-        print '登録済みです';
+        echo '<br/>';
+        echo '登録済みです';
       }
       //データベース接続解除
       $dbh = null;
 
       //セッションクリア
-      // session_unset();
+      $_SESSION['title'] = '';
+      $_SESSION['author_no'] = '';
+      $_SESSION['company_no'] = '';
+      $_SESSION['class'] = '';
 
       ?>
 </body>
