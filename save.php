@@ -22,17 +22,38 @@
 
       $title = htmlspecialchars($_SESSION['title']);
       $author_no = htmlspecialchars($_SESSION['author_no']);
-      $company_no = htmlspecialchars($_SESSION['company_no']);
+
+      //チェックボックスの配列確認
+      if(is_array($_SESSION['company_no'])){
+        $company_no = implode(',', $_SESSION['company_no']);
+      }else{
+        $company_no = $_SESSION['company_no'];
+      }
+
+      if(is_array($_SESSION['category_no'])){
+        $category_no = implode(',', $_SESSION['category_no']);
+      }else{
+        $category_no = $_SESSION['category_no'];
+      }
+
+
       $class = htmlspecialchars($_SESSION['class']);
+
+      $image_url = "./images/".$_SESSION['image_name'];
+      $image_url = htmlspecialchars($image_url);
 
       //データベースから取得
       $authors = $dbh->prepare('SELECT * FROM author WHERE author_id=?');
       $authors->execute(array($author_no));
       $author = $authors->fetch();
 
-      $companys = $dbh->prepare('SELECT * FROM company WHERE company_id=?');
-      $companys->execute(array($company_no));
-      $company = $companys->fetch();
+      $companys = $dbh->prepare('SELECT * FROM company');
+      $companys->execute();
+      $companylist = $companys->fetchAll(PDO::FETCH_ASSOC);
+
+      $categorys = $dbh->prepare('SELECT * FROM category');
+      $categorys->execute();
+      $categorylist = $categorys->fetchAll(PDO::FETCH_ASSOC);
 
 //echo_r($GLOBALS);
       echo '【登録が完了しました】';
@@ -44,40 +65,67 @@
       echo $author['author_name'];
       echo '<br/>';
       echo '出版社:';
-      echo $company['company_name'];
+    foreach($companylist as $company){
+        foreach((array)$company_no as $valu) {
+          if($company['company_id'] == $valu){
+            echo($company['company_name']."  ");
+          }
+        }
+      }
+
+      echo '<br/>';
+      echo 'カテゴリー:';
+      foreach($categorylist as $category){
+        foreach((array)$category_no as $valu) {
+          if($category['category_id'] == $valu){
+            // var_dump($category['category_id']);
+            // var_dump($valu);
+            echo($category['category_name']. "  ");
+          }
+        }
+      }
       echo '<br/>';
       echo '分類:';
       echo $class;
+      echo '<br/>';
+      echo '添付画像:';
+      echo $image_url;
       echo '<br/>';
       echo '<br/>';
       echo '<a href="new.php">新規登録画面に戻る</a>';
       echo '<br/>';
       echo '<a href="index.html">TOPに戻る</a>';
 
-      if(!$_SESSION['check']) {
-        // データベースに保存
-        $sql = 'INSERT INTO book_list (title,author_id,company_id,class,created)
-        value (:title,:author_no,:company_no,:class,NOW())';
-        $stmt = $dbh->prepare($sql);
-        $stmt->bindParam(":title",$title);
-        $stmt->bindParam(":author_no",$author_no);
-        $stmt->bindParam(":company_no",$company_no);
-        $stmt->bindParam(":class",$class);
-        $stmt->execute();
-
-        $_SESSION['check'] = true;
-      }else{
-        echo '<br/>';
-        echo '登録済みです';
-      }
+      // if(!$_SESSION['check']) {
+      //   // データベースに保存
+      //   $sql = 'INSERT INTO book_list (title,author_id,company_id,category_id,class,image,created)
+      //   value (:title,:author_no,:company_no,:category_no,:class,:image,NOW())';
+      //   $stmt = $dbh->prepare($sql);
+      //   $stmt->bindParam(":title",$title);
+      //   $stmt->bindParam(":author_no",$author_no);
+      //   $stmt->bindParam(":company_no",$company_no);
+      //   $stmt->bindParam(":category_no",$category_no);
+      //   $stmt->bindParam(":class",$class);
+      //   $stmt->bindParam(":image",$image_url);
+      //   $stmt->execute();
+      //
+      //   $_SESSION['check'] = true;
+      //
+      //   //セッションクリア
+      //   $_SESSION['title'] = '';
+      //   $_SESSION['author_no'] = '';
+      //   $_SESSION['company_no'] = '';
+      //   $_SESSION['category_no'] = '';
+      //   $_SESSION['class'] = '';
+      //   $_SESSION['image'] = '';
+      // }else{
+      //   echo '<br/>';
+      //   echo '登録済みです';
+      // }
       //データベース接続解除
       $dbh = null;
 
-      //セッションクリア
-      $_SESSION['title'] = '';
-      $_SESSION['author_no'] = '';
-      $_SESSION['company_no'] = '';
-      $_SESSION['class'] = '';
+
 
       ?>
 </body>

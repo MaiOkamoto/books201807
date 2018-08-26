@@ -21,28 +21,34 @@
       $dbh->query('SET NAMES utf8');
 
       //データベースから取得
-      $id = $_GET['id'];
-      $_SESSION['id'] = $_GET['id'];
+      // $id = $_GET['id'];
+      $_SESSION['id'] = $_POST['id'];
 
       $books = $dbh->prepare('SELECT *
                             FROM book_list
                             LEFT JOIN author
                             ON book_list.author_id = author.author_id
-                            LEFT JOIN company
-                            ON book_list.company_id = company.company_id
                             WHERE id=?');
-      $books->execute(array($id));
+      $books->execute(array($_SESSION['id']));
       $book = $books->fetch();
 
-      $authors = $dbh->query('SELECT * FROM author');
-      $companys = $dbh->query('SELECT * FROM company');
+      $authors = $dbh->prepare('SELECT * FROM author');
+      $authors->execute();
+
+      $companys = $dbh->prepare('SELECT * FROM company');
+      $companys->execute();
+      $companylist = $companys->fetchAll(PDO::FETCH_ASSOC);
+
+      $categorys = $dbh->prepare('SELECT * FROM category');
+      $categorys->execute();
+      $categorylist = $categorys->fetchAll(PDO::FETCH_ASSOC);
 
       //データベース接続解除
       $dbh = null;
       ?>
 
       <div>
-        <form action="update_fin.php" method="post">
+        <form action="update_fin.php" method="post" enctype="multipart/form-data">
 
           タイトル<br/>
           <input type="text" name="title" value="<?php echo($book['title']); ?>"><br/><br/>
@@ -59,16 +65,37 @@
           </select><br/><br/>
 
           出版社を入力<br/>
-            <?php while($company = $companys->fetch()): ?>
-              <?php if($book['company_id'] == $company['company_id']): ?>
-                <input type="checkbox" name="company_no" value="<?php echo($company['company_id']); ?>" checked>
-                <?php echo($company['company_name']); ?>
-              <?php else: ?>
-                <input type="checkbox" name="company_no" value="<?php echo($company['company_id']); ?>">
-                <?php echo($company['company_name']); ?>
+          <?php
+          $company_array = explode(',',$book['company_id']);
+          ?>
+            <?php foreach($companylist as $company): ?>
+              <input type="checkbox" name="company_no[]" value="<?php echo($company['company_id']); ?>"
+              <?php if(!empty($book['company_id'])): ?>
+                <?php foreach($company_array as $valu ): ?>
+                  <?php if($company['company_id'] == $valu): ?>
+                    <?php echo  "checked"; ?>
+                  <?php endif; ?>
+                <?php endforeach; ?>
               <?php endif; ?>
-            <?php endwhile; ?>
-          <br/><br/>
+              ><?php echo($company['company_name']); ?>
+            <?php endforeach; ?>
+            <br/><br/>
+
+          カテゴリーを選ぶ</br>
+          <?php $category_array = explode(',',$book['category_id']); ?>
+
+          <?php foreach($categorylist as $category):  ?>
+            <input type="checkbox" name="category_no[]" value="<?php echo($category['category_id']); ?>"
+            <?php if(!empty($book['category_id'])): ?>
+              <?php foreach($category_array as $valu): ?>
+                <?php if($category['category_id'] == $valu): ?>
+                  <?php echo "checked"; ?>
+                <?php endif; ?>
+              <?php endforeach; ?>
+            <?php endif; ?>
+            ><?php echo($category['category_name']); ?>
+            <?php endforeach; ?>
+            <br/><br/>
 
           週刊誌or月刊誌<br/>
           <?php if($book['class'] == '週刊誌'): ?>
@@ -77,6 +104,15 @@
           <?php else: ?>
           <input type="radio" name="class" value="週刊誌">週刊誌
           <input type="radio" name="class" value="月刊誌" checked>月刊誌
+          <?php endif; ?>
+          <br/><br/>
+
+          画像ファイルの添付<br/>
+          <?php if(!empty($book['image'])): ?>
+          登録画像：<?php echo $book['image']  ?><br/>
+          <input type="file" name="image"><br/>
+          <?php else: ?>
+          <input type="file" name="image" >
           <?php endif; ?>
           <br/><br/>
 

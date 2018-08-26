@@ -21,12 +21,12 @@
       $dbh->query('SET NAMES utf8');
 
       //セッション取得
-      $_SESSION['id'] = $_GET['id'];
-      $id = $_SESSION['id'];
+      $_SESSION['id'] = $_POST['id'];
+      // $id = $_SESSION['id'];
 
       //データベースから取得
       $books = $dbh->prepare('SELECT * FROM book_list WHERE id=?');
-      $books->execute(array($id));
+      $books->execute(array($_SESSION['id']));
       $book = $books->fetch();
 
       //データベース接続解除
@@ -34,9 +34,13 @@
       ?>
 
       <div>
-        <p><?php echo($book['title']); ?></p>
+        <p>『<?php echo($book['title']); ?>』</p>
+        <p>本当に削除しますか？</p>
         <form action="delete_fin.php" method="post">
           <button type="submit">削除</button>
+        </form>
+        <form action="list.php" method="post">
+          <button type="submit">戻る</button>
         </form>
 
 
