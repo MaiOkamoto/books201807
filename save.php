@@ -20,6 +20,8 @@
       $dbh = new PDO($dsn, $user, $password);
       $dbh->query('SET NAMES utf8');
 
+
+
       $title = htmlspecialchars($_SESSION['title']);
       $author_no = htmlspecialchars($_SESSION['author_no']);
 
@@ -66,21 +68,20 @@
       echo '<br/>';
       echo '出版社:';
     foreach($companylist as $company){
-        foreach((array)$company_no as $valu) {
+        foreach($_SESSION['company_no'] as $valu) {
           if($company['company_id'] == $valu){
-            echo($company['company_name']."  ");
+            echo $company['company_name'],"  ";
           }
         }
       }
 
       echo '<br/>';
       echo 'カテゴリー:';
+      // var_dump($category_no);
       foreach($categorylist as $category){
-        foreach((array)$category_no as $valu) {
+        foreach($_SESSION['category_no'] as $valu) {
           if($category['category_id'] == $valu){
-            // var_dump($category['category_id']);
-            // var_dump($valu);
-            echo($category['category_name']. "  ");
+            echo $category['category_name'], " ";
           }
         }
       }
@@ -96,32 +97,32 @@
       echo '<br/>';
       echo '<a href="index.html">TOPに戻る</a>';
 
-      // if(!$_SESSION['check']) {
-      //   // データベースに保存
-      //   $sql = 'INSERT INTO book_list (title,author_id,company_id,category_id,class,image,created)
-      //   value (:title,:author_no,:company_no,:category_no,:class,:image,NOW())';
-      //   $stmt = $dbh->prepare($sql);
-      //   $stmt->bindParam(":title",$title);
-      //   $stmt->bindParam(":author_no",$author_no);
-      //   $stmt->bindParam(":company_no",$company_no);
-      //   $stmt->bindParam(":category_no",$category_no);
-      //   $stmt->bindParam(":class",$class);
-      //   $stmt->bindParam(":image",$image_url);
-      //   $stmt->execute();
-      //
-      //   $_SESSION['check'] = true;
-      //
-      //   //セッションクリア
-      //   $_SESSION['title'] = '';
-      //   $_SESSION['author_no'] = '';
-      //   $_SESSION['company_no'] = '';
-      //   $_SESSION['category_no'] = '';
-      //   $_SESSION['class'] = '';
-      //   $_SESSION['image'] = '';
-      // }else{
-      //   echo '<br/>';
-      //   echo '登録済みです';
-      // }
+      if(!$_SESSION['check']) {
+        // データベースに保存
+        $sql = 'INSERT INTO book_list (title,author_id,company_id,category_id,class,image,created)
+        value (:title,:author_no,:company_no,:category_no,:class,:image,NOW())';
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindParam(":title",$title);
+        $stmt->bindParam(":author_no",$author_no);
+        $stmt->bindParam(":company_no",$company_no);
+        $stmt->bindParam(":category_no",$category_no);
+        $stmt->bindParam(":class",$class);
+        $stmt->bindParam(":image",$image_url);
+        $stmt->execute();
+
+        $_SESSION['check'] = true;
+
+        //セッションクリア
+        $_SESSION['title'] = '';
+        $_SESSION['author_no'] = '';
+        $_SESSION['company_no'] = '';
+        $_SESSION['category_no'] = '';
+        $_SESSION['class'] = '';
+        $_SESSION['image'] = '';
+      }else{
+        echo '<br/>';
+        echo '登録済みです';
+      }
       //データベース接続解除
       $dbh = null;
 

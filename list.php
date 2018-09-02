@@ -38,10 +38,6 @@
       $categorys = $dbh->prepare('SELECT * FROM category');
       $categorys->execute();
       $categorylist = $categorys->fetchAll(PDO::FETCH_ASSOC);
-      // echo "<pre>";
-      // var_dump($companylist);
-      // echo "</pre>";
-
 
       //データベース接続解除
       $dbh = null;
